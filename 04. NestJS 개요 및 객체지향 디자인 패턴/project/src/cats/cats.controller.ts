@@ -11,6 +11,8 @@ import {
 import { HttpException, UseFilters, Param, ParseIntPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from '../common/exceptions/http-exception.filter';
 import { SuccessInterceptor } from '../common/interceptors/success.interceptor';
+import { Body } from '@nestjs/common/decorators';
+import { CatRequestDto } from './dto/cats.request.dto';
 
 @Controller('cats')
 @UseInterceptors(SuccessInterceptor)
@@ -19,34 +21,32 @@ export class CatsController {
   constructor(private readonly CatsService: CatsService) {}
 
   @Get()
-  getAllCat() {
-    console.log('hello controller');
-    return { cats: 'get all cat api' };
+  // 현재 로그인한 고양이
+  getCurrentCat() {
+    return 'current cat';
   }
 
-  @Get(':id')
-  getOneCat(@Param('id', ParseIntPipe) param: number) {
-    console.log(param);
-    return 'get one cat';
-  }
-
+  // 고양이 회원가입
   @Post()
-  createCat() {
-    return 'create cat';
+  async signUp(@Body() body: CatRequestDto) {
+    return await this.CatsService.signUp(body);
   }
 
-  @Put(':id')
-  updateCat() {
-    return 'updated cat';
+  // 고양이 로그인
+  @Post('login')
+  logIn() {
+    return 'login';
   }
 
-  @Patch(':id')
-  updatePartialCat() {
-    return 'get parameter';
+  // 고양이 로그아웃
+  @Post('logout')
+  logOut() {
+    return 'logout';
   }
 
-  @Delete(':id')
-  deleteCat() {
-    return 'delete service';
+  // 고양이가 자신의 이미지를 업로드
+  @Post('upload/cats')
+  uploadCatImg() {
+    return 'uploadImg';
   }
 }
