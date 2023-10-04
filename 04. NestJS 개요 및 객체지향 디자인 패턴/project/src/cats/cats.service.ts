@@ -4,14 +4,16 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Cat } from './cats.schema';
 import * as bcrypt from 'bcrypt';
+import { CatsRepository } from './cats.repository';
 
 @Injectable()
 export class CatsService {
-  constructor(@InjectModel(Cat.name) private readonly catModel: Model<Cat>) {}
+  // constructor(@InjectModel(Cat.name) private readonly catModel: Model<Cat>) {}
+  constructor(private readonly CatsRepository: CatsRepository) {}
 
   async signUp(body: CatRequestDto) {
     const { email, name, password } = body;
-    const isCatExist = await this.catModel.exists({ email });
+    const isCatExist = await this.CatsRepository.existByEmail(email);
 
     // 이미 존재하는 이메일일 경우 에러처리
     if (isCatExist) {
@@ -24,7 +26,7 @@ export class CatsService {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // DB에 저장
-    const cat = await this.catModel.create({
+    const cat = await this.CatsRepository.create({
       email: email,
       name: name,
       password: hashedPassword,
