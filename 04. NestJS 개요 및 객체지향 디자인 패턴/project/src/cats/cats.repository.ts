@@ -8,17 +8,24 @@ import { CatRequestDto } from './dto/cats.request.dto';
 export class CatsRepository {
   constructor(@InjectModel(Cat.name) private readonly catModel: Model<Cat>) {}
 
+  async findCatByEmail(email: string): Promise<Cat | null> {
+    const cat = await this.catModel.findOne({ email });
+    return cat;
+  }
+
   async existByEmail(email: string): Promise<boolean> {
-    try {
-      const result = await this.catModel.exists({ email: email });
-      if (result) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch (error) {
-      throw new HttpException('db error', 400);
-    }
+    const result = await this.catModel.exists({ email: email });
+    if (result) return true;
+    // try {
+    //   const result = await this.catModel.exists({ email: email });
+    //   if (result) {
+    //     return true;
+    //   } else {
+    //     return false;
+    //   }
+    // } catch (error) {
+    //   throw new HttpException('db error', 400);
+    // }
   }
 
   async create(cat: CatRequestDto): Promise<Cat> {

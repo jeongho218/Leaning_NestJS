@@ -15,12 +15,17 @@ import { Body } from '@nestjs/common/decorators';
 import { CatRequestDto } from './dto/cats.request.dto';
 import { ReadOnlyCatDto } from './dto/cat.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { AuthService } from './../auth/auth.service';
+import { LoginRequestDto } from 'src/auth/dto/login.request.dto';
 
 @Controller('cats')
 @UseInterceptors(SuccessInterceptor)
 @UseFilters(HttpExceptionFilter)
 export class CatsController {
-  constructor(private readonly CatsService: CatsService) {}
+  constructor(
+    private readonly CatsService: CatsService,
+    private readonly AuthService: AuthService,
+  ) {}
 
   // 현재 로그인한 고양이
   @ApiOperation({ summary: '현재 로그인한 고양이 가져오기' })
@@ -48,8 +53,9 @@ export class CatsController {
   // 고양이 로그인
   @ApiOperation({ summary: '로그인' })
   @Post('login')
-  logIn() {
-    return 'login';
+  logIn(@Body() data: LoginRequestDto) {
+    // return 'login';
+    return this.AuthService.jwtLogin(data);
   }
 
   // 고양이 로그아웃
