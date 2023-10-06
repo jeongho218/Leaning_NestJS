@@ -11,12 +11,14 @@ import {
 import { HttpException, UseFilters, Param, ParseIntPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from '../common/exceptions/http-exception.filter';
 import { SuccessInterceptor } from '../common/interceptors/success.interceptor';
-import { Body } from '@nestjs/common/decorators';
+import { Body, Req, UseGuards } from '@nestjs/common/decorators';
 import { CatRequestDto } from './dto/cats.request.dto';
 import { ReadOnlyCatDto } from './dto/cat.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './../auth/auth.service';
 import { LoginRequestDto } from 'src/auth/dto/login.request.dto';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { CurrentUser } from 'src/common/decorators/user.decorator';
 
 @Controller('cats')
 @UseInterceptors(SuccessInterceptor)
@@ -29,9 +31,10 @@ export class CatsController {
 
   // 현재 로그인한 고양이
   @ApiOperation({ summary: '현재 로그인한 고양이 가져오기' })
+  @UseGuards(JwtAuthGuard)
   @Get()
-  getCurrentCat() {
-    return 'current cat';
+  getCurrentCat(@CurrentUser() cat) {
+    return cat.readOnlyData;
   }
 
   // 고양이 회원가입
@@ -56,13 +59,6 @@ export class CatsController {
   logIn(@Body() data: LoginRequestDto) {
     // return 'login';
     return this.AuthService.jwtLogin(data);
-  }
-
-  // 고양이 로그아웃
-  @ApiOperation({ summary: '로그아웃' })
-  @Post('logout')
-  logOut() {
-    return 'logout';
   }
 
   // 고양이가 자신의 이미지를 업로드

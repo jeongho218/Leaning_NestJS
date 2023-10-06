@@ -36,12 +36,12 @@ export class AuthService {
       throw new UnauthorizedException('이메일과 비밀번호를 확인해주세요.');
     }
 
-    const payLoad = { email: email, sub: cat.id };
+    const payload = { email: email, sub: cat.id };
     // sub는 토큰 제목을 의미하며 cat의 id, mongodb가 생성하는 고유 식별자를 넣는다.
 
     return {
-      token: this.jwtService.sign(payLoad),
-      // payLoad의 정보를 jwt.sign() 함수를 통해서 토큰을 생성한다.
+      token: this.jwtService.sign(payload),
+      // payload의 정보를 jwt.sign() 함수를 통해서 토큰을 생성한다.
     };
   }
 }

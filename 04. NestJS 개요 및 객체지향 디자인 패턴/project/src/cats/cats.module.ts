@@ -10,7 +10,6 @@ import { AuthModule } from 'src/auth/auth.module';
   imports: [
     MongooseModule.forFeature([{ name: Cat.name, schema: CatSchema }]),
     forwardRef(() => AuthModule),
-
     // AuthModule이 export하고 있는 AuthService를 사용할 수 있다
     // forwardRef 순환 종속성 해결
     // CatsModule은 AuthModule을 종속받고 있고,
