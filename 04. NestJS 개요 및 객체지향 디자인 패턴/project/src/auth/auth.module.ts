@@ -4,13 +4,15 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt/jwt.strategy';
 import { CatsModule } from 'src/cats/cats.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     PassportModule.register({ defaultStrategy: 'jwt', session: false }),
     // jwt strategy에 대한 설정이 들어가는 곳
     JwtModule.register({
-      secret: 'secretKey',
+      secret: process.env.JWT_SECRET,
       // 시크릿키는 jwt 전략을 가져오는 ./jwt/jwt.strategy.ts의 것과 동일해야 한다.
       signOptions: { expiresIn: '1y' },
     }), // 사용자가 로그인할때마다 사용하는 부분
