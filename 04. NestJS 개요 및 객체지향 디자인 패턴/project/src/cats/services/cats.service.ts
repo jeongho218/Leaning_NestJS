@@ -1,16 +1,28 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { CatRequestDto } from './dto/cats.request.dto';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Cat } from './cats.schema';
+import { CatRequestDto } from '../dto/cats.request.dto';
+import { Cat } from '../cats.schema';
 import * as bcrypt from 'bcrypt';
-import { CatsRepository } from './cats.repository';
+import { CatsRepository } from '../cats.repository';
 
 @Injectable()
 export class CatsService {
   // constructor(@InjectModel(Cat.name) private readonly catModel: Model<Cat>) {}
   constructor(private readonly CatsRepository: CatsRepository) {}
 
+  // 고양이의 이미지 업로드 API
+  async uploadImg(cat: Cat, files: Express.Multer.File[]) {
+    const fileName = `cats/${files[0].filename}`;
+    console.log(fileName);
+
+    const newCat = await this.CatsRepository.findByIdAndUpdateImg(
+      cat.id,
+      fileName,
+    );
+    console.log(newCat);
+    return newCat;
+  }
+
+  // 회원가입 API
   async signUp(body: CatRequestDto) {
     const { email, name, password } = body;
     const isCatExist = await this.CatsRepository.existByEmail(email);

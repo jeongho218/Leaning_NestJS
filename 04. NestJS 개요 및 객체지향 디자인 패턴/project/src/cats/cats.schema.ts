@@ -46,11 +46,19 @@ export class Cat extends Document {
   @IsNotEmpty()
   password: string;
 
-  @Prop()
+  @Prop({
+    default:
+      'https://cdn.dribbble.com/users/5517074/screenshots/12085846/cat_logo.png',
+  }) // 디폴트 이미지, 아무것도 업로드 하지 않았을때 나오는 이미지
   @IsString()
   imgUrl: string;
 
-  readonly readOnlyData: { id: string; email: string; name: string };
+  readonly readOnlyData: {
+    id: string;
+    email: string;
+    name: string;
+    imgUrl: string;
+  };
 }
 
 export const CatSchema = SchemaFactory.createForClass(Cat);
@@ -78,6 +86,7 @@ CatSchema.virtual('readOnlyData').get(function (this: Cat) {
     id: this.id,
     email: this.email,
     name: this.name,
+    imgUrl: this.imgUrl,
   };
 });
 // 실제 실행 결과, 패스워드는 감춰졌다

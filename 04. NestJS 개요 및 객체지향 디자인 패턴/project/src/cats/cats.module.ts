@@ -1,13 +1,18 @@
 import { Module, forwardRef } from '@nestjs/common';
-import { CatsController } from './cats.controller';
-import { CatsService } from './cats.service';
+import { CatsController } from './controllers/cats.controller';
+import { CatsService } from './services/cats.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Cat, CatSchema } from './cats.schema';
 import { CatsRepository } from './cats.repository';
 import { AuthModule } from 'src/auth/auth.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
+    MulterModule.register({
+      dest: './upload', // dest는 'destination'의 약자로 뒤에 오는 경로에 저장된다는 의미이다.
+    }),
+
     MongooseModule.forFeature([{ name: Cat.name, schema: CatSchema }]),
     forwardRef(() => AuthModule),
     // AuthModule이 export하고 있는 AuthService를 사용할 수 있다

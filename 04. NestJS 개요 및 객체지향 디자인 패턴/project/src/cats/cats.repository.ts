@@ -37,6 +37,15 @@ export class CatsRepository {
     // }
   }
 
+  // 고양이의 이미지를 업데이트
+  async findByIdAndUpdateImg(id: string, fileName: string) {
+    const cat = await this.catModel.findById(id);
+    cat.imgUrl = `http://localhost:8000/media/${fileName}`;
+    const newCat = await cat.save(); // save() 메소드, 저장
+    console.log(newCat);
+    return newCat.readOnlyData;
+  }
+
   async create(cat: CatRequestDto): Promise<Cat> {
     return await this.catModel.create(cat);
   }
