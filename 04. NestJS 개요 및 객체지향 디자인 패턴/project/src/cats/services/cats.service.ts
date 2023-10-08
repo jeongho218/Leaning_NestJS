@@ -9,6 +9,15 @@ export class CatsService {
   // constructor(@InjectModel(Cat.name) private readonly catModel: Model<Cat>) {}
   constructor(private readonly CatsRepository: CatsRepository) {}
 
+  // 모든 고양이 가져오기 API
+  async getAllCat() {
+    const allCat = await this.CatsRepository.findAll();
+    const readOnlyCats = allCat.map((cat) => cat.readOnlyData);
+    return readOnlyCats;
+  }
+  // DB에서 모든 고양이들의 데이터를 가져오면서,
+  // map을 통해 schema/readOnlyData에서 허가된 데이터만을 가져오도록 한다.
+
   // 고양이의 이미지 업로드 API
   async uploadImg(cat: Cat, files: Express.Multer.File[]) {
     const fileName = `cats/${files[0].filename}`;
