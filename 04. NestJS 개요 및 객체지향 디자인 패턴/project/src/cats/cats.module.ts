@@ -6,6 +6,7 @@ import { Cat, CatSchema } from './cats.schema';
 import { CatsRepository } from './cats.repository';
 import { AuthModule } from 'src/auth/auth.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { CommentSchema, Comments } from 'src/comments/comments.schema';
 
 @Module({
   imports: [
@@ -13,7 +14,10 @@ import { MulterModule } from '@nestjs/platform-express';
       dest: './upload', // dest는 'destination'의 약자로 뒤에 오는 경로에 저장된다는 의미이다.
     }),
 
-    MongooseModule.forFeature([{ name: Cat.name, schema: CatSchema }]),
+    MongooseModule.forFeature([
+      { name: Comments.name, schema: CommentSchema },
+      { name: Cat.name, schema: CatSchema },
+    ]),
     forwardRef(() => AuthModule),
     // AuthModule이 export하고 있는 AuthService를 사용할 수 있다
     // forwardRef 순환 종속성 해결

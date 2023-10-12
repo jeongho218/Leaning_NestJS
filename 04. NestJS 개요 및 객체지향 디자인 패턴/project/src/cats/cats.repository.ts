@@ -1,18 +1,31 @@
 import { Injectable, HttpException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Cat } from './cats.schema';
 import { CatRequestDto } from './dto/cats.request.dto';
+import { CommentSchema } from 'src/comments/comments.schema';
+import * as mongoose from 'mongoose';
 
 @Injectable()
 export class CatsRepository {
   constructor(@InjectModel(Cat.name) private readonly catModel: Model<Cat>) {}
 
   async findAll() {
-    return await this.catModel.find();
+    const CommentsModel = mongoose.model('comments', CommentSchema);
+
+    const result = await this.catModel
+      .find()
+      .populate('comments', CommentsModel);
+    // populate() 메소드. 다른 도큐먼트와 이어주는 역할을 한다
+
+    return result;
+
+    // return await this.catModel.find();
   }
 
-  async findCatByIdWithoutPassword(catId: string): Promise<Cat | null> {
+  async findCatByIdWithoutPassword(
+    catId: string | Types.ObjectId,
+  ): Promise<Cat | null> {
     const cat = await this.catModel.findById(catId).select('-password');
     // select(): 매개변수 catId로 조회한 고양이 데이터 중에서 사용할 데이터를 골라낸다.
     // '-password': catId로 조회한 고양이 데이터 중 'password'를 제외한 내용을 변수 cat에 할당한다.
