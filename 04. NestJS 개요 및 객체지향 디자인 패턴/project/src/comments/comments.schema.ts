@@ -5,6 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 const options: SchemaOptions = {
   timestamps: true, // DB에 데이터가 만들어질때 타임스탬프를 찍는다
+  collection: 'comments', // 다른 스키마와 연결할때 해당 스키마를 지칭하는 이름
 };
 
 @Schema(options)
