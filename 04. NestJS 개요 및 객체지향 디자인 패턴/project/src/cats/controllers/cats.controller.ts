@@ -11,7 +11,13 @@ import {
 import { HttpException, UseFilters, Param, ParseIntPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from '../../common/exceptions/http-exception.filter';
 import { SuccessInterceptor } from '../../common/interceptors/success.interceptor';
-import { Body, Req, UploadedFiles, UseGuards } from '@nestjs/common/decorators';
+import {
+  Body,
+  Req,
+  UploadedFile,
+  UploadedFiles,
+  UseGuards,
+} from '@nestjs/common/decorators';
 import { CatRequestDto } from '../dto/cats.request.dto';
 import { ReadOnlyCatDto } from '../dto/cat.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -22,6 +28,7 @@ import { CurrentUser } from 'src/common/decorators/user.decorator';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from '../../common/utils/multer.options';
 import { Cat } from '../cats.schema';
+import { AwsService } from './../services/aws.service';
 
 @Controller('cats')
 @UseInterceptors(SuccessInterceptor)
@@ -30,6 +37,7 @@ export class CatsController {
   constructor(
     private readonly CatsService: CatsService,
     private readonly AuthService: AuthService,
+    private readonly awsService: AwsService,
   ) {}
 
   // 현재 로그인한 고양이
@@ -63,24 +71,25 @@ export class CatsController {
     return this.AuthService.jwtLogin(data);
   }
 
-  // 고양이 이미지 업로드
+  // 고양이 이미지 업로드 API - AWS S3에 저장
   @ApiOperation({ summary: '고양이 이미지 업로드' })
-  // @UseInterceptors(FileInterceptor('image')) // FileInterceptor, 단일 파일
   @UseGuards(JwtAuthGuard)
-  // 현재 로그인한 고양이의 이미지를 가져오려면, 자신을 인증해야하므로 사용
-  @UseInterceptors(FilesInterceptor('image', 10, multerOptions('cats')))
-  // FilesInterceptor, 복수 파일
-  // 'image'는 업로드한 내용, 10은 한번에 올릴 수 있는 파일의 개수 제한
-  // 사전에 작성한 multerOptions, /upload/cats에 파일을 저장하겠다는 의미
   @Post('upload')
-  uploadCatImg(
-    @UploadedFiles() files: Array<Express.Multer.File>,
-    @CurrentUser() cat: Cat,
-  ) {
-    console.log(files);
-    return this.CatsService.uploadImg(cat, files);
+  @UseInterceptors(FileInterceptor('image'))
+  async uploadMediaFile(@UploadedFile() file: Express.Multer.File) {
+    console.log(file);
+    return await this.awsService.uploadFileToS3('cats', file);
   }
-
+  //
+  // 고양이 이미지 업로드 API - 로컬에 저장
+  // uploadCatImg(
+  //   @UploadedFiles() files: Array<Express.Multer.File>,
+  //   @CurrentUser() cat: Cat,
+  // ) {
+  //   console.log(files);
+  // return this.CatsService.uploadImg(cat, files);
+  // }
+  //
   @ApiOperation({ summary: '모든 고양이 가져오기' })
   @Get('all')
   getAllCat() {

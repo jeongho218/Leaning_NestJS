@@ -19,7 +19,7 @@ export class CatsService {
     return readOnlyCats;
   }
 
-  // 고양이의 이미지 업로드 API
+  // 고양이의 이미지 업로드 API - 로컬에 저장
   async uploadImg(cat: Cat, files: Express.Multer.File[]) {
     const fileName = `cats/${files[0].filename}`;
     console.log(fileName);

@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Cat } from './cats.schema';
 import { CatRequestDto } from './dto/cats.request.dto';
-import { CommentSchema } from 'src/comments/comments.schema';
+import { CommentSchema } from '../comments/comments.schema';
 import * as mongoose from 'mongoose';
 
 @Injectable()
@@ -57,7 +57,8 @@ export class CatsRepository {
   // 고양이의 이미지를 업데이트
   async findByIdAndUpdateImg(id: string, fileName: string) {
     const cat = await this.catModel.findById(id);
-    cat.imgUrl = `http://localhost:8000/media/${fileName}`;
+    // cat.imgUrl = `http://localhost:8000/media/${fileName}`;
+    cat.imgUrl = fileName;
     const newCat = await cat.save(); // save() 메소드, 저장
     console.log(newCat);
     return newCat.readOnlyData;
