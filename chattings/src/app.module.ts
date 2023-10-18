@@ -4,6 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 // import { AppService } from './app.service';
+
+import { ChatsModule } from './chats/chats.module';
 // controller를 통해서 views를 렌더링할 것이기 때문에
 // 서비스가 필요없다.
 
@@ -15,6 +17,7 @@ import * as mongoose from 'mongoose';
     // app.module에서 ConfigModule이 global하다라고 선언함으로써
     // 다른 모듈에서 ConfigModule을  선언할 필요가 없어진다.
     MongooseModule.forRoot(process.env.MONGODB_URI),
+    ChatsModule,
   ],
   controllers: [AppController],
   providers: [],
