@@ -1,4 +1,6 @@
-const socket = io('/'); // socket.io의 메소드를 사용하기 위한 준비
+const socket = io('/chattings'); // socket.io의 메소드를 사용하기 위한 준비이며,
+// 네임스페이스는 '/chattings'가 된다.
+
 const getElementById = (id) => {
   return document.getElementById(id) || null;
 };
@@ -23,7 +25,7 @@ const helloUser = () => {
   socket.on('hello_user', (data) => {
     console.log(data);
   });
-  // on은 '받는 행위
+  // on은 '받는 행위'
   // 서버가 보낸 데이터를 클라이언트가 받거나,
   // 클라이언트가 보낸 데이터를 서버가 받는 경우가 on
   // chats.gateway.ts의 'handleNewUser'메소드에서 socket.emit을 통해 보낸 데이터를 받아 이벤트를 수행한다.

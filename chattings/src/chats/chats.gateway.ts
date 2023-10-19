@@ -1,13 +1,44 @@
+import { Logger } from '@nestjs/common';
 import {
   SubscribeMessage,
   WebSocketGateway,
   MessageBody,
   ConnectedSocket,
+  OnGatewayInit,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 
-@WebSocketGateway()
-export class ChatsGateway {
+@WebSocketGateway({ namespace: 'chattings' })
+export class ChatsGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
+  // OnGateWayInit, OnGatewayConnection, OnGatewayDisconnect은 인터페이스이며 인터페이스는 규약이다.
+  // 규약에 따라 OnGatewayInit의 뒤에는 반드시 afterInit()이 와야하며,
+  // OnGatewayConnection의 뒤에는 반드시 handleConnection()이,
+  // OnGatewayDisconnect의 뒤에는 반드시 handleDisconnect()가 와야한다.
+  // https://docs.nestjs.com/websockets/gateways#lifecycle-hooks
+  private logger = new Logger('chat');
+  constructor() {
+    this.logger.log('this is constructor');
+  }
+
+  handleDisconnect(@ConnectedSocket() socket: Socket) {
+    this.logger.log(`disconnected: ${socket.id}, ${socket.nsp.name}`); // nsp는 네임스페이스의 약자
+  }
+
+  handleConnection(@ConnectedSocket() socket: Socket) {
+    this.logger.log('this is connect');
+    this.logger.log(`connected: ${socket.id}, ${socket.nsp.name}`);
+  }
+
+  afterInit() {
+    this.logger.log('this is init');
+  }
+  // 인터페이스에 따라온 함수의 실행 순서는 constructor, afterInit, handleConnection이며
+  // handleConnection은 socket이 연결된 후 실행된다.
+
   @SubscribeMessage('new_user')
   // /public/script.js의 함수 helloUser에서 socket.emit 메소드로 보낸 데이터를 받는다.
   handleNewUser(
