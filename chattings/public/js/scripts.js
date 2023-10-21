@@ -10,14 +10,18 @@ const helloStrangerElement = getElementById('hello_stranger');
 const chattingBoxElement = getElementById('chatting_box');
 const formElement = getElementById('chat_form');
 
+// 전역 소켓 관리
 // 신규 사용자 연결 알림
 socket.on('user_connected', (username) => {
   drawNewChat(`${username} connected!`);
 });
+// 새로운 채팅 띄움
 socket.on('new_chat', (data) => {
   const { chat, username } = data;
   drawNewChat(`${username}: ${chat}`);
 });
+// 연결이 끊어진 사용자 알림
+socket.on('disconnect_user', (username) => drawNewChat(`${username}: bye...`));
 
 // 채팅창 입력 내용을 브로드캐스팅하는 함수
 const handleSubmit = (event) => {
