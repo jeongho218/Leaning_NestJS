@@ -13,7 +13,7 @@ const formElement = getElementById('chat_form');
 // 전역 소켓 관리
 // 신규 사용자 연결 알림
 socket.on('user_connected', (username) => {
-  drawNewChat(`${username} connected!`);
+  drawNewChat(`${username} 님이 채팅방에 들어오셨습니다!`);
 });
 // 새로운 채팅 띄움
 socket.on('new_chat', (data) => {
@@ -21,7 +21,9 @@ socket.on('new_chat', (data) => {
   drawNewChat(`${username}: ${chat}`);
 });
 // 연결이 끊어진 사용자 알림
-socket.on('disconnect_user', (username) => drawNewChat(`${username}: bye...`));
+socket.on('disconnect_user', (username) =>
+  drawNewChat(`${username} 님이 채팅방을 나갔습니다.`),
+);
 
 // 채팅창 입력 내용을 브로드캐스팅하는 함수
 const handleSubmit = (event) => {
@@ -30,7 +32,7 @@ const handleSubmit = (event) => {
   if (inputValue !== '') {
     socket.emit('submit_chat', inputValue);
     // 화면에 그리기
-    drawNewChat(`me : ${inputValue}`);
+    drawNewChat(`me : ${inputValue}`, true);
     event.target.elements[0].value = '';
   }
 };
@@ -39,9 +41,22 @@ const handleSubmit = (event) => {
 const drawHelloStranger = (username) =>
   (helloStrangerElement.innerText = `Hello ${username} Stranger :)`);
 // 사용자가 채팅박스에 입력한 내용을 웹 페이지에 띄워주는 함수
-const drawNewChat = (message) => {
+const drawNewChat = (message, isMe = false) => {
   const wrapperChatBox = document.createElement('div');
-  const chatBox = `<div>${message}</div>`;
+  wrapperChatBox.className = 'clearfix';
+  let chatBox;
+  if (!isMe)
+    chatBox = `
+    <div class='bg-gray-300 w-3/4 mx-4 my-2 p-2 rounded-lg clearfix break-all'>
+      ${message}
+    </div>
+    `;
+  else
+    chatBox = `
+    <div class='bg-white w-3/4 ml-auto mr-4 my-2 p-2 rounded-lg clearfix break-all'>
+      ${message}
+    </div>
+    `;
   wrapperChatBox.innerHTML = chatBox;
   chattingBoxElement.append(wrapperChatBox);
 };
