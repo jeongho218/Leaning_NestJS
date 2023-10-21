@@ -38,10 +38,15 @@ export class ChatsGateway
     @ConnectedSocket() socket: Socket,
   ) {
     // username을 db에 적재
-    // 접속해 있는 모든 사용자에게 새로운 사용자의 username을 전달( broadcast)
-    // 그냥 socket.emit을 사용하면 해당 소켓 아이디를 가진 대상에만 데이터를 보내지만,
-    // broadcast를 사용하여 현재 서버와 연결 중인 모든 소켓에 데이터를 보낼 수 있다.
     socket.broadcast.emit('user_connected', username);
     return username;
+  }
+
+  @SubscribeMessage('submit_chat')
+  handleSubmitChat(
+    @MessageBody() chat: string,
+    @ConnectedSocket() socket: Socket,
+  ) {
+    socket.broadcast.emit('new_chat', { chat, username: socket.id });
   }
 }
